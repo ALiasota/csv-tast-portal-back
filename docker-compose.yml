@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: nestjs_app
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: 'postgresql://postgres:postgres@localhost:5432/mydatabase?schema=public'
+      PORT: 3000
+      JWT_SECRET: 'my_secret'
+      JWT_LIFETIME: '3600000s'
+    command: npm run start:prod
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+  db:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mydatabase
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+
+volumes:
+  postgres_data:
